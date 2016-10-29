@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>oddsratio by pat-s</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>oddsratio</h1>
+        <h2>Simplified odds ratio calculation of binomial GAM/GLM models in R</h2>
+        <a href="https://github.com/pat-s/oddsratio" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="oddsratio" class="anchor" href="#oddsratio" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>oddsratio</h1>
+
+<p>Functions to calculate and plot odds ratios of Generalized Additive (Mixed) Models and Generalized Linear (Mixed) Models with a binomial response variable (i.e. logistic regression models).</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install from CRAN:</p>
+
+<div class="highlight highlight-source-r"><pre>install.packages(<span class="pl-s"><span class="pl-pds">"</span>oddsratio<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Get the development version from Github:</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-e">devtools</span><span class="pl-k">::</span>install_github(<span class="pl-s"><span class="pl-pds">"</span>pat-s/oddsratio<span class="pl-pds">"</span></span>, <span class="pl-v">build_vignettes</span> <span class="pl-k">=</span> <span class="pl-c1">TRUE</span>)</pre></div>
+
+<h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
+
+<h3>
+<a id="glm" class="anchor" href="#glm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GLM</h3>
+
+<p>Odds ratio calculation of predictors <code>gre</code> &amp; <code>gpa</code> of a fitted model <code>fit.glm</code> with increment steps of 380 and 5, respectively.
+For factor variables (here: <code>rank</code> with 4 levels), automatically all odds ratios corresponding to the base level (here: <code>rank1</code>) are returned including their respective confident intervals. The default level is 95%. However, other levels can be specified with the param <code>CI</code>. Data source: <a href="http://www.ats.ucla.edu/stat/r/dae/logit.htm">http://www.ats.ucla.edu/stat/r/dae/logit.htm</a></p>
+
+<div class="highlight highlight-source-r"><pre>library(<span class="pl-smi">oddsratio</span>)
+<span class="pl-smi">dat</span> <span class="pl-k">&lt;-</span> read.csv(<span class="pl-s"><span class="pl-pds">"</span>http://www.ats.ucla.edu/stat/data/binary.csv<span class="pl-pds">"</span></span>)
+<span class="pl-smi">dat</span><span class="pl-k">$</span><span class="pl-smi">rank</span> <span class="pl-k">&lt;-</span> <span class="pl-k">factor</span>(<span class="pl-smi">dat</span><span class="pl-k">$</span><span class="pl-smi">rank</span>)
+<span class="pl-smi">fit.glm</span> <span class="pl-k">&lt;-</span> glm(<span class="pl-smi">admit</span> <span class="pl-k">~</span> <span class="pl-smi">gre</span> <span class="pl-k">+</span> <span class="pl-smi">gpa</span> <span class="pl-k">+</span> <span class="pl-smi">rank</span>, <span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">family</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>binomial<span class="pl-pds">"</span></span>)
+
+calc.oddsratio.glm(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">model</span> <span class="pl-k">=</span> <span class="pl-smi">fit.glm</span>, 
+                   <span class="pl-v">incr</span> <span class="pl-k">=</span> <span class="pl-k">list</span>(<span class="pl-v">gre</span> <span class="pl-k">=</span> <span class="pl-c1">380</span>, <span class="pl-v">gpa</span> <span class="pl-k">=</span> <span class="pl-c1">5</span>, <span class="pl-v">CI</span> <span class="pl-k">=</span> <span class="pl-c1">0.95</span>))</pre></div>
+
+<pre><code>##   predictor oddsratio CI.low (2.5 %) CI.high (97.5 %)          increment
+## 1       gre     2.364          1.054            5.396                380
+## 2       gpa    55.712          2.229         1511.282                  5
+## 3     rank2     0.509          0.272            0.945 Indicator variable
+## 4     rank3     0.262          0.132            0.512 Indicator variable
+## 5     rank4     0.212          0.091            0.471 Indicator variable
+</code></pre>
+
+<h3>
+<a id="gam" class="anchor" href="#gam" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GAM</h3>
+
+<p>For GAMs, the calculation of odds ratio is different. Due to its non-linear definition, odds ratios do only apply to specific value changes and are not constant throughout the whole value range of the predictor as for GLMs. Hence, odds ratios of GAMs can only be computed for one predictor at a time by holding all other predictors at a fixed value while changing the value of the specific predictor. Confident intervals are currently fixed to the 95% level for GAMs. Data source: <code>?mgcv::predict.gam()</code></p>
+
+<p>Here, the usage of <code>calc.oddsratio.gam()</code> is shown by calculating odds ratios of pred <code>x2</code> for a 20% steps across the whole value range of the predictor.</p>
+
+<div class="highlight highlight-source-r"><pre>suppressPackageStartupMessages(library(<span class="pl-smi">mgcv</span>))
+set.seed(<span class="pl-c1">1234</span>)
+<span class="pl-smi">n</span> <span class="pl-k">&lt;-</span> <span class="pl-c1">200</span>
+<span class="pl-smi">sig</span> <span class="pl-k">&lt;-</span> <span class="pl-c1">2</span>
+<span class="pl-smi">dat</span> <span class="pl-k">&lt;-</span> gamSim(<span class="pl-c1">1</span>, <span class="pl-v">n</span> <span class="pl-k">=</span> <span class="pl-smi">n</span>,<span class="pl-v">scale</span> <span class="pl-k">=</span> <span class="pl-smi">sig</span>, <span class="pl-v">verbose</span> <span class="pl-k">=</span> <span class="pl-c1">FALSE</span>)
+<span class="pl-smi">dat</span><span class="pl-k">$</span><span class="pl-smi">x4</span> <span class="pl-k">&lt;-</span> as.factor(c(rep(<span class="pl-s"><span class="pl-pds">"</span>A<span class="pl-pds">"</span></span>, <span class="pl-c1">50</span>), rep(<span class="pl-s"><span class="pl-pds">"</span>B<span class="pl-pds">"</span></span>, <span class="pl-c1">50</span>), rep(<span class="pl-s"><span class="pl-pds">"</span>C<span class="pl-pds">"</span></span>, <span class="pl-c1">50</span>), rep(<span class="pl-s"><span class="pl-pds">"</span>D<span class="pl-pds">"</span></span>, <span class="pl-c1">50</span>)))
+<span class="pl-smi">fit.gam</span> <span class="pl-k">&lt;-</span> <span class="pl-e">mgcv</span><span class="pl-k">::</span>gam(<span class="pl-smi">y</span> <span class="pl-k">~</span> s(<span class="pl-smi">x0</span>) <span class="pl-k">+</span> s(I(<span class="pl-smi">x1</span><span class="pl-k">^</span><span class="pl-c1">2</span>)) <span class="pl-k">+</span> s(<span class="pl-smi">x2</span>) <span class="pl-k">+</span> offset(<span class="pl-smi">x3</span>) <span class="pl-k">+</span> <span class="pl-smi">x4</span>, <span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>)
+
+calc.oddsratio.gam(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">model</span> <span class="pl-k">=</span> <span class="pl-smi">fit.gam</span>, <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, 
+                   <span class="pl-v">percentage</span> <span class="pl-k">=</span> <span class="pl-c1">20</span>, <span class="pl-v">slice</span> <span class="pl-k">=</span> <span class="pl-c1">TRUE</span>)</pre></div>
+
+<pre><code>##   predictor value1 value2 perc1 perc2 oddsratio CI.low (2.5%)
+## 1        x2  0.001  0.200     0    20   2510.77       1091.68
+## 2        x2  0.200  0.400    20    40      0.03          0.03
+## 3        x2  0.400  0.599    40    60      0.58          0.56
+## 4        x2  0.599  0.799    60    80      0.06          0.06
+## 5        x2  0.799  0.998    80   100      0.41          0.75
+##   CI.high (97.5%)
+## 1         5774.53
+## 2            0.03
+## 3            0.60
+## 4            0.06
+## 5            0.22
+</code></pre>
+
+<p>If you want to compute a single odds ratio for specific values, simply set param <code>slice = FALSE</code>:</p>
+
+<div class="highlight highlight-source-r"><pre>calc.oddsratio.gam(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">model</span> <span class="pl-k">=</span> <span class="pl-smi">fit.gam</span>, 
+                   <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, <span class="pl-v">values</span> <span class="pl-k">=</span> c(<span class="pl-c1">0.099</span>, <span class="pl-c1">0.198</span>))</pre></div>
+
+<pre><code>##   predictor value1 value2 oddsratio CI.low (2.5%) CI.high (97.5%)
+## 1        x2  0.099  0.198  23.32353      23.30424        23.34283
+</code></pre>
+
+<p>From version 0.3.0 on (Github version 0.2.0.9000) you can now do the following things:</p>
+
+<ul>
+<li>  Plot smoothing functions of GAM(M)s</li>
+</ul>
+
+<div class="highlight highlight-source-r"><pre>pl.smooth.gam(<span class="pl-smi">fit.gam</span>, <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, <span class="pl-v">title</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Predictor 'x2'<span class="pl-pds">"</span></span>)</pre></div>
+
+<p><img src="http://i.imgur.com/uI92nbH.png" alt=""></p>
+
+<ul>
+<li>  Insert the calculated odds ratios into the smoothing function</li>
+</ul>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-smi">plot.object</span> <span class="pl-k">&lt;-</span> pl.smooth.gam(<span class="pl-smi">fit.gam</span>, <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, <span class="pl-v">title</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Predictor 'x2'<span class="pl-pds">"</span></span>)
+<span class="pl-smi">or.object</span> <span class="pl-k">&lt;-</span> calc.oddsratio.gam(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">model</span> <span class="pl-k">=</span> <span class="pl-smi">fit.gam</span>, 
+                                <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, <span class="pl-v">values</span> <span class="pl-k">=</span> c(<span class="pl-c1">0.099</span>, <span class="pl-c1">0.198</span>))
+
+<span class="pl-smi">plot</span> <span class="pl-k">&lt;-</span> add.oddsratio.into.plot(<span class="pl-smi">plot.object</span>, <span class="pl-smi">or.object</span>, <span class="pl-v">or.yloc</span> <span class="pl-k">=</span> <span class="pl-c1">3</span>,
+                                <span class="pl-v">values.xloc</span> <span class="pl-k">=</span> <span class="pl-c1">0.04</span>, <span class="pl-v">line.size</span> <span class="pl-k">=</span> <span class="pl-c1">0.5</span>, 
+                                <span class="pl-v">line.type</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>dotdash<span class="pl-pds">"</span></span>, <span class="pl-v">values.yloc</span> <span class="pl-k">=</span> <span class="pl-c1">0.5</span>,
+                                <span class="pl-v">arrow.col</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>red<span class="pl-pds">"</span></span>)
+<span class="pl-smi">plot</span></pre></div>
+
+<p><img src="https://github.com/pat-s/oddsratio/blob/master/README_files/figure-markdown_github/unnamed-chunk-7-1.png" alt=""></p>
+
+<p>If you want to insert multiple odds ratios, just go on!</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-smi">or.object2</span> <span class="pl-k">&lt;-</span> calc.oddsratio.gam(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">dat</span>, <span class="pl-v">model</span> <span class="pl-k">=</span> <span class="pl-smi">fit.gam</span>, <span class="pl-v">pred</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>x2<span class="pl-pds">"</span></span>, 
+                                 <span class="pl-v">values</span> <span class="pl-k">=</span> c(<span class="pl-c1">0.4</span>, <span class="pl-c1">0.6</span>))
+
+add.oddsratio.into.plot(<span class="pl-smi">plot</span>, <span class="pl-smi">or.object2</span>, <span class="pl-v">or.yloc</span> <span class="pl-k">=</span> <span class="pl-c1">2.1</span>, <span class="pl-v">values.yloc</span> <span class="pl-k">=</span> <span class="pl-c1">2</span>,
+                        <span class="pl-v">line.col</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>green4<span class="pl-pds">"</span></span>, <span class="pl-v">text.col</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>black<span class="pl-pds">"</span></span>,
+                        <span class="pl-v">rect.col</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>green4<span class="pl-pds">"</span></span>, <span class="pl-v">rect.alpha</span> <span class="pl-k">=</span> <span class="pl-c1">0.2</span>,
+                        <span class="pl-v">line.alpha</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>, <span class="pl-v">line.type</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>dashed<span class="pl-pds">"</span></span>,
+                        <span class="pl-v">arrow.xloc.r</span> <span class="pl-k">=</span> <span class="pl-c1">0.01</span>, <span class="pl-v">arrow.xloc.l</span> <span class="pl-k">=</span> <span class="pl-k">-</span><span class="pl-c1">0.01</span>,
+                        <span class="pl-v">arrow.length</span> <span class="pl-k">=</span> <span class="pl-c1">0.01</span>, <span class="pl-v">rect</span> <span class="pl-k">=</span> <span class="pl-c1">T</span>)   </pre></div>
+
+<p><img src="https://github.com/pat-s/oddsratio/blob/master/README_files/figure-markdown_github/unnamed-chunk-8-1.png" alt=""></p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/pat-s/oddsratio/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/pat-s/oddsratio/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/pat-s/oddsratio"></a> is maintained by <a href="https://github.com/pat-s">pat-s</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
